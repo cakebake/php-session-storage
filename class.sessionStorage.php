@@ -41,6 +41,7 @@ class sessionStorage
     */
     public static function get($key, $fallbackValue = null, $container = 'default')
     {
+        self::init();
         self::prefixKey($key);
         self::prefixContainer($container);
 
@@ -53,6 +54,7 @@ class sessionStorage
     */
     public static function getContainer($container = 'default')
     {
+        self::init();
         self::prefixContainer($container);
 
         if (!self::containerExists($container))
@@ -72,6 +74,7 @@ class sessionStorage
     */
     public static function getAllContainers()
     {
+        self::init();
         $data = array();
 
         if (is_array($_SESSION)) {
@@ -97,6 +100,7 @@ class sessionStorage
     */
     public static function set($key, $value, $container = 'default', $overwrite = true)
     {
+        self::init();
         self::prefixKey($key);
         self::prefixContainer($container);
 
@@ -122,6 +126,7 @@ class sessionStorage
     */
     public static function update($key, $value, $container = 'default')
     {
+        self::init();
         self::prefixKey($key);
         self::prefixContainer($container);
 
@@ -137,6 +142,7 @@ class sessionStorage
     */
     public static function destroy($key, $container = 'default')
     {
+        self::init();
         self::prefixKey($key);
         self::prefixContainer($container);
 
@@ -155,6 +161,7 @@ class sessionStorage
     */
     public static function destroyContainer($container = 'default')
     {
+        self::init();
         self::prefixContainer($container);
 
         if (self::containerExists($container)) {
@@ -171,6 +178,7 @@ class sessionStorage
     */
     public static function destroyAllContainers($additionalMatchString = null)
     {
+        self::init();
         $erg = array();
 
         if (is_array($_SESSION)) {
@@ -196,6 +204,7 @@ class sessionStorage
     */
     public static function exists($key, $container = 'default')
     {
+        self::init();
         self::prefixKey($key);
         self::prefixContainer($container);
 
@@ -210,6 +219,7 @@ class sessionStorage
     */
     public static function containerExists($container = 'default')
     {
+        self::init();
         self::prefixContainer($container);
 
         return isset($_SESSION[$container]);
@@ -223,6 +233,7 @@ class sessionStorage
     */
     public static function createContainer($container = 'default')
     {
+        self::init();
         self::prefixContainer($container);
 
         if (!self::containerExists($container)) {
@@ -230,6 +241,14 @@ class sessionStorage
         }
 
         return self::containerExists($container);
+    }
+
+    /**
+     * Sets user-level session storage functions
+     */
+    public static function setHandler()
+    {
+        @session_start();
     }
 
     /**
@@ -255,13 +274,22 @@ class sessionStorage
     }
 
     /**
-    * Removes prefix from string
-    *
-    * @param string $string
-    * @param string $prefix
-    */
+     * Removes prefix from string
+     *
+     * @param string $string
+     * @param string $prefix
+     * @return mixed
+     */
     protected static function removePrefix($string, $prefix)
     {
         return str_replace($prefix, '', $string);
+    }
+
+    /**
+     * Static constructor method
+     */
+    protected static function init()
+    {
+        self::setHandler();
     }
 }
